@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EIT Control Console</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="app-header">
+  <div class="brand">
+    <div class="logo-dot"></div>
+    <h1>EIT Control Console</h1>
+  </div>
+  <div class="status-cluster">
+    <span id="connStatus" class="status status-disconnected">Disconnected</span>
+    <button id="btnPing" class="btn btn-ghost" title="Ping backend">Ping</button>
+  </div>
+</header>
+
+<main class="container">
+  <!-- CONNECTION -->
+  <section class="card">
+    <h2>Connection</h2>
+    <div class="grid grid-3">
+      <label class="field">
+        <span>Backend Base URL</span>
+        <input id="backendUrl" type="text" placeholder="http://127.0.0.1:8080" />
+      </label>
+      <label class="field">
+        <span>FPGA IP</span>
+        <input id="fpgaIp" type="text" placeholder="192.168.1.50" />
+      </label>
+      <label class="field">
+        <span>Transport</span>
+        <select id="transport">
+          <option value="udp">UDP</option>
+          <option value="tcp">TCP</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>FPGA Port</span>
+        <input id="fpgaPort" type="number" min="1" max="65535" value="5005" />
+      </label>
+      <label class="field">
+        <span>API Mode</span>
+        <select id="apiMode">
+          <option value="http">HTTP (REST)</option>
+          <option value="ws">WebSocket</option>
+        </select>
+      </label>
+      <div class="field align-end">
+        <button id="btnConnect" class="btn btn-primary">Connect</button>
+      </div>
+    </div>
+    <p class="hint">Tip: keep backend and FPGA on the same LAN for low latency and fewer “ghosts in the wire”.</p>
+  </section>
+
+  <!-- STIMULATION -->
+  <section class="card">
+    <h2>Stimulation Parameters</h2>
+    <div class="grid grid-3">
+      <label class="field">
+        <span>Waveform</span>
+        <select id="waveform">
+          <option>Sine</option>
+          <option>Square</option>
+          <option>Triangle</option>
+          <option>DC</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Frequency (Hz)</span>
+        <input id="freq" type="number" min="1" max="1000000" value="50000" />
+      </label>
+      <label class="field">
+        <span>Amplitude (mA)</span>
+        <input id="amplitude" type="number" min="0" max="10" step="0.01" value="1.0" />
+      </label>
+      <label class="field">
+        <span>Injection Pattern</span>
+        <select id="pattern">
+          <option value="adjacent">Adjacent</option>
+          <option value="opposite">Opposite</option>
+          <option value="skip">Skip-1</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Burst Count</span>
+        <input id="burstCount" type="number" min="1" max="10000" value="64" />
+      </label>
+      <label class="field">
+        <span>Duration (ms)</span>
+        <input id="durationMs" type="number" min="1" max="600000" value="1000" />
+      </label>
+    </div>
+
+    <details class="subcard">
+      <summary>Frequency Sweep (optional)</summary>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>Start (Hz)</span>
+          <input id="sweepStart" type="number" min="1" max="1000000" value="1000" />
+        </label>
+        <label class="field">
+          <span>Stop (Hz)</span>
+          <input id="sweepStop" type="number" min="1" max="1000000" value="200000" />
+        </label>
+        <label class="field">
+          <span>Steps</span>
+          <input id="sweepSteps" type="number" min="1" max="1000" value="10" />
+        </label>
+        <label class="field">
+          <span>Scale</span>
+          <select id="sweepScale">
+            <option value="linear">Linear</option>
+            <option value="log">Log</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Enable Sweep</span>
+          <select id="sweepEnable">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+          </select>
+        </label>
+      </div>
+    </details>
+
+    <details class="subcard">
+      <summary>Acquisition</summary>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>Sampling Rate (SPS)</span>
+          <input id="sps" type="number" min="100" max="1000000" value="200000" />
+        </label>
+        <label class="field">
+          <span>Averages</span>
+          <input id="averages" type="number" min="1" max="1024" value="4" />
+        </label>
+        <label class="field">
+          <span>HPF/LPF</span>
+          <select id="filters">
+            <option value="none">None</option>
+            <option value="hpf">HPF</option>
+            <option value="lpf">LPF</option>
+            <option value="bandpass">Band-pass</option>
+          </select>
+        </label>
+      </div>
+    </details>
+
+    <details class="subcard">
+      <summary>Electrodes</summary>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>Electrode Count</span>
+          <select id="elecCount">
+            <option>16</option>
+            <option selected>32</option>
+            <option>64</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Electrode Mask</span>
+          <select id="elecMask" multiple size="6"></select>
+        </label>
+        <label class="field">
+          <span>Reference Electrode</span>
+          <select id="refElectrode"></select>
+        </label>
+      </div>
+    </details>
+
+    <details class="subcard">
+      <summary>Calibration & Safety</summary>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>Max Current (mA)</span>
+          <input id="limitCurrent" type="number" min="0" max="10" step="0.01" value="2.0" />
+        </label>
+        <label class="field">
+          <span>Max Voltage (Vpp)</span>
+          <input id="limitVoltage" type="number" min="0" max="20" step="0.1" value="5.0" />
+        </label>
+        <label class="field">
+          <span>DAC Cal (gain)</span>
+          <input id="dacGain" type="number" step="0.0001" value="1.0000" />
+        </label>
+        <label class="field">
+          <span>ADC Cal (gain)</span>
+          <input id="adcGain" type="number" step="0.0001" value="1.0000" />
+        </label>
+        <label class="field">
+          <span>Offset (mV)</span>
+          <input id="dcOffset" type="number" step="0.1" value="0.0" />
+        </label>
+      </div>
+    </details>
+
+    <div class="action-row">
+      <button id="btnApply" class="btn">Apply</button>
+      <button id="btnStart" class="btn btn-primary">Start</button>
+      <button id="btnStop" class="btn btn-ghost">Stop</button>
+      <button id="btnEStop" class="btn btn-danger">Emergency Stop</button>
+    </div>
+  </section>
+
+  <!-- PAYLOAD + LOGS -->
+  <section class="card two-col">
+    <div>
+      <h2>Payload Preview</h2>
+      <pre id="payloadPreview" class="code"></pre>
+    </div>
+    <div>
+      <h2>Event Log</h2>
+      <div id="log" class="log"></div>
+      <div class="action-row">
+        <button id="btnClearLog" class="btn btn-ghost">Clear Log</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <label class="switch">
+    <input id="toggleTheme" type="checkbox" />
+    <span>Dark mode</span>
+  </label>
+  <small>v1.0 • Built for lab control. Don’t exceed regulatory limits. ⚡</small>
+</footer>
+
+<!-- Toasts -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
