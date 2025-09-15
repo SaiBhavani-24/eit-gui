@@ -2,7 +2,7 @@
 const DEFAULTS = {
   backendUrl: "http://127.0.0.1:8080", // Flask/FastAPI base
   fpgaIp: "192.168.1.50",
-  fpgaPort: 5005,
+  fpgaPort: 3121,
   transport: "udp", // "udp" | "tcp"
   apiMode: "http",  // "http" | "ws"
 };
@@ -111,6 +111,11 @@ function validatePayload(p){
   if(p.electrodes.mask.length < 2) errs.push("Select at least 2 electrodes in mask.");
   return errs;
 }
+//-----Validator-----
+function showValidator() {
+  document.getElementById("console").style.display = "none";
+  document.getElementById("validator").style.display = "block";
+}
 
 // --- API helpers ---
 function getBase(){ return ($("backendUrl").value || DEFAULTS.backendUrl).trim().replace(/\/+$/,""); }
@@ -213,3 +218,4 @@ window.addEventListener("DOMContentLoaded", () => {
     document.documentElement.classList.toggle("light", e.target.checked);
   });
 });
+
