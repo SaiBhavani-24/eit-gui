@@ -198,117 +198,6 @@
         </label>
       </div>
     </details>
-    <div id="validator" style="display:none">
-     <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>FPGA-EIT Configuration Validator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f9f9f9;
-    }
-    h2 {
-      color: #333;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input {
-      width: 200px;
-      padding: 5px;
-      margin-top: 5px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #0078D4;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #005A9E;
-    }
-    #output {
-      margin-top: 30px;
-      padding: 15px;
-      background-color: #fff;
-      border-left: 5px solid #0078D4;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      white-space: pre-wrap;
-    }
-  </style>
-</head>
-<body>
-
-<h2>FPGA-EIT Configuration Validator</h2>
-
-<label for="electrodes">Number of electrodes:</label>
-<input type="number" id="electrodes" value="256">
-
-<label for="adc_resolution">ADC resolution (bits):</label>
-<input type="number" id="adc_resolution" value="18">
-
-<label for="sample_rate">Sample rate (Hz):</label>
-<input type="number" id="sample_rate" value="1000000">
-
-<label for="modules">Number of modules:</label>
-<input type="number" id="modules" value="8">
-
-<label for="bandwidth">Interface bandwidth (Mbps):</label>
-<input type="number" id="bandwidth" value="3000">
-
-<button onclick="validate()">Validate Configuration</button>
-
-<div id="output"></div>
-
-<script>
-function validate() {
-  const electrodes = parseInt(document.getElementById("electrodes").value);
-  const adc_resolution = parseInt(document.getElementById("adc_resolution").value);
-  const sample_rate = parseFloat(document.getElementById("sample_rate").value);
-  const modules = parseInt(document.getElementById("modules").value);
-  const bandwidth = parseFloat(document.getElementById("bandwidth").value);
-
-  const MAX_POWER = 250;
-  const MAX_FPGA_CLOCK = 200e6;
-
-  const channels_per_module = electrodes / modules;
-  const samples_per_channel = sample_rate;
-  const bits_per_sample = adc_resolution;
-
-  const ram_per_module = (samples_per_channel * channels_per_module * bits_per_sample) / (8 * 1024 * 1024);
-  const raw_bitrate = (channels_per_module * sample_rate * bits_per_sample) / 1e6;
-  const processed_throughput = (2000 * 8 * 200) / (1024 * 1024); // MBps
-  const estimated_power = (modules * 20) + 20;
-
-  let result = `Derived Metrics:\n----------------\n`;
-  result += `RAM per module: ${ram_per_module.toFixed(2)} MB\n`;
-  result += `Raw bitrate per module: ${raw_bitrate.toFixed(2)} Mbps\n`;
-  result += `Processed throughput: ${processed_throughput.toFixed(2)} MBps\n`;
-  result += `Estimated total power: ${estimated_power.toFixed(2)} W\n\n`;
-
-  let warnings = [];
-  if (estimated_power > MAX_POWER) warnings.push("⚠️ Power exceeds system budget.");
-  if (raw_bitrate > bandwidth) warnings.push("⚠️ Raw bitrate exceeds interface bandwidth.");
-  if (sample_rate > MAX_FPGA_CLOCK) warnings.push("⚠️ Sample rate exceeds FPGA clock limit.");
-
-  result += "Warnings:\n" + (warnings.length ? warnings.join("\n") : "None");
-
-  document.getElementById("output").textContent = result;
-}
-</script>
-
-</body>
-</html>
-  
-    </div>
 
     <div class="action-row">
       <button id="btnApply" class="btn">Apply</button>
@@ -349,4 +238,5 @@ function validate() {
 <script src="app.js"></script>
 </body>
 </html>
+
 
