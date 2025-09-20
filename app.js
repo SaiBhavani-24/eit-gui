@@ -1,6 +1,6 @@
 // === quick config (point to your backend) ===
 const DEFAULTS = {
-  backendUrl: "http://127.0.0.1:8080", // Flask/FastAPI base
+  backendUrl: "http://127.0.0.1:5000", // Flask/FastAPI base
   fpgaIp: "192.168.1.50",
   fpgaPort: 3121,
   transport: "udp", // "udp" | "tcp"
@@ -242,6 +242,7 @@ function runValidator() {
     document.getElementById("valResult").textContent = "Error: " + err.message;
   });
 }
+
 
 
 
