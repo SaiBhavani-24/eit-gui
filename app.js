@@ -218,4 +218,30 @@ window.addEventListener("DOMContentLoaded", () => {
     document.documentElement.classList.toggle("light", e.target.checked);
   });
 });
+function runValidator() {
+  const config = {
+    electrodes: parseInt(document.getElementById("valElectrodes").value),
+    adc_resolution: parseInt(document.getElementById("valAdcRes").value),
+    adc_sample_rate: parseInt(document.getElementById("valAdcRate").value),
+    oversampling: parseInt(document.getElementById("valOversample").value),
+    compression_bits: parseInt(document.getElementById("valCompression").value),
+    frame_rate: parseInt(document.getElementById("valFps").value),
+    max_bandwidth: parseInt(document.getElementById("valMaxBw").value)
+  };
+
+  fetch("http://localhost:5000/validate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config)
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("valResult").textContent = JSON.stringify(data, null, 2);
+  })
+  .catch(err => {
+    document.getElementById("valResult").textContent = "Error: " + err.message;
+  });
+}
+
+
 
