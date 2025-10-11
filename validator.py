@@ -27,7 +27,7 @@ def validate(config):
     # Feasibility thresholds
     feasible = (
         adc_res <= 18 and
-        compression <= 32 and
+        compression <= 256 and
         bandwidth <= max_bw and
         memory_bytes <= 1_000_000 and
         latency_ms <= 10
